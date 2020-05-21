@@ -24,6 +24,7 @@ public class DatMaker implements IpSearchConstant {
     private LinkedList<IndexBlock> indexPool = new LinkedList<>();
     /**
      * region and data ptr mapping data
+     * key：ip_merge_txt中的区域字段的内容
      */
     private HashMap<String, DataBlock> regionPtrPool = new HashMap<>();
 
@@ -80,6 +81,8 @@ public class DatMaker implements IpSearchConstant {
                 //3. get the region
                 sIdx = eIdx + 1;
                 String region = line.substring(sIdx);
+
+                // 将起始结束IP以及区域信息，构建一个indexblock,然后添加到indexPool链表中
                 addDataBlock(raf, startIp, endIp, region);
                 count++;
             }
@@ -154,18 +157,23 @@ public class DatMaker implements IpSearchConstant {
             byte[] data = region.getBytes(StandardCharsets.UTF_8);
             long dataPtr = 0;
             //check region ptr pool first
+            // 检查是否有重复的区域
             if (regionPtrPool.containsKey(region)) {
                 DataBlock dataBlock = regionPtrPool.get(region);
                 dataPtr = dataBlock.getDataPtr();
             } else {
                 //This method returns the offset from the beginning of the file, in bytes
+                //将新的区域写入在Header Index Block之后, 并将区域的文件指针存放于dataPtr之中
                 dataPtr = raf.getFilePointer();
                 raf.write(data);
                 regionPtrPool.put(region, new DataBlock(region, dataPtr));
             }
             //add the data index blocks
+            //将当前记录中起始、结束IP、区域信息的文件指针地址、区域信息的信息长度存放于一个
+            //新构建的indexBlock中；
             IndexBlock ib = new IndexBlock(ByteUtil.ipToInteger(startIp),
                     ByteUtil.ipToInteger(endIp), dataPtr, (short) data.length);
+            //将新构建的indexBlock加入indexPool链表
             indexPool.add(ib);
         } catch (IOException e) {
             e.printStackTrace();
