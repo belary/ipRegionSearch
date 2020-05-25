@@ -59,6 +59,7 @@ public class Searcher implements IpSearchConstant {
         if (index == -1) {
             return null;
         }
+        // 因为ip_merge.txt中的每条记录是生成2条ip（开始和结束）的记录和地域信息构成，所以除以2取整得出该ip_merge.txt的region区域对应的地址
         int dataPtr = ipRegionPtr[index >> 1];
         short len = ipRegionLen[index >> 1];
         String region = new String(dataRegion, dataPtr, len, StandardCharsets.UTF_8).trim();

@@ -47,6 +47,9 @@ public class DatMaker implements IpSearchConstant {
             log.info("+-Try to load the file ...");
             log.info("|--[Ok]");
             ipReader = new BufferedReader(new FileReader(srcIpFile));
+
+            // 初始化数据库文件
+
             raf = new RandomAccessFile(tagDbFile, "rw");
             //init the db file
             raf.seek(0L);
@@ -54,6 +57,13 @@ public class DatMaker implements IpSearchConstant {
             raf.write(new byte[HEAD_BLOCK_LENGTH]);
             log.info("+-Db file initialized.");
             log.info("+-Try to write the data blocks ... ");
+
+            // 至此的数据库文件结构为
+            /*
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            |                     Header Index(8 bytes empty)              |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            */
             String line = null;
             int count = 0;
             while ((line = ipReader.readLine()) != null) {
@@ -82,16 +92,31 @@ public class DatMaker implements IpSearchConstant {
                 sIdx = eIdx + 1;
                 String region = line.substring(sIdx);
 
-                // 将起始结束IP以及区域信息，构建一个indexblock,然后添加到indexPool链表中
+                // 将起始结束IP(转为了int)以及区域信息，构建一个indexblock,然后添加到indexPool链表中
                 addDataBlock(raf, startIp, endIp, region);
                 count++;
             }
+
+
             log.info("|--Data block flushed!");
             log.info("|--Reader lines: " + count);
             log.info("|--Data file pointer: " + raf.getFilePointer() + "\n");
+            // 至此的数据库文件结构为
+            /*
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            |                     Header Index(8 bytes empty)              |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            | region1, region2, region3, ... region_N( N*datLen btye)      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+             */
 
+            // ipSegments 每个indexBlock的开始、结束的IP值
             int[] ipSegments = new int[indexPool.size() * 2];
+
+            // ipRegionPtr 每个indexBlock的region文件指针地址
             int[] ipRegionPtr = new int[indexPool.size()];
+
+            // ipRegionLen 每个indexBlock的的region数据的字节长度
             short[] ipRegionLen = new short[indexPool.size()];
 
             int index = 0;
@@ -103,28 +128,60 @@ public class DatMaker implements IpSearchConstant {
                 ipRegionPtr[ipRegionPtrIndex++] = (int) block.getDataPtr();
                 ipRegionLen[ipRegionLenIndex++] = block.getDataLen();
             }
+
+            // 将以上三个数组按照开始结束ip、region数据指针、region数据长度顺序构建一个list
+            // 并转存为字节数组 searchInfoBytes
             // serialize ipsegments
             List<Object> list = new ArrayList<>(3);
             list.add(ipSegments);
             list.add(ipRegionPtr);
             list.add(ipRegionLen);
             byte[] searchInfoBytes = JSONArray.toJSONBytes(list);
+
             // data end prt
+            //SearchInfo区 起始位置的文件指针（Data区末尾的文件指针紧接searchInfo区）
             long dataEndPrt = raf.getFilePointer();
             log.info("+--Try to write searchInfo block ... ");
             raf.write(searchInfoBytes);
-            long ipSegmentsEndPrt = raf.getFilePointer();
+            long ipSegmentsEndPrt = raf.getFilePointer(); //SearchInfo区 结束位置的文件指针
             log.info("|--[Ok]");
+            // 至此的数据库文件结构为
+            /*
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            |                     Header Index(8 bytes empty)              |  <-- Header Index
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            | region1, region2, region3, ... region_N( N*datLen btyes)     |  <-- Data
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            | ipSegments[1..2n], ipRegionPtr[1..n], ipRegionLen[1..n]      |  <-- SearchInfo
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+             */
+
             // head block
+            // 将Data区的结束位置文件指针和SearchInfo区的结束位置文件指针写回
+            // 数据库前8个字节
             log.info("+-Try to write head block ... ");
             byte[] headBlockBytes = new byte[HEAD_BLOCK_LENGTH];
+            // Data区的结束位置文件指针转储为字节（4个）
             ByteUtil.write32Long(headBlockBytes, 0, dataEndPrt);
+            // SearchInfo区的结束位置文件指针转储为字节（4个）
             ByteUtil.write32Long(headBlockBytes, 4, ipSegmentsEndPrt);
             raf.seek(0L);
             raf.write(headBlockBytes);
             raf.close();
             raf = null;
             log.info("|--[Ok]");
+
+            // 至此的数据库文件结构为
+            /*
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            | Header Index(4bytes to DataEndPtr, 4bytes to SearchInfoPtr)  |  <-- Header Index
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            | region1, region2, region3, ... region_N( N*datLen bytes)     |  <-- Data
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            | ipSegments[1..2n], ipRegionPtr[1..n], ipRegionLen[1..n]      |  <-- SearchInfo
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+            */
+
             if (GZIP) {
                 log.info("+--Try to gzip ... ");
                 GZipUtils.compress(tagDbFilePath,true);
