@@ -14,7 +14,7 @@ import java.io.*;
  */
 public class SearchTest implements IpSearchConstant {
     public static void main(String[] args) throws IOException {
-        System.out.println(Searcher.memorySearch("001.000.016.000"));
+        System.out.println(Searcher.memorySearch("124.232.146.140"));
         search3();
     }
 
@@ -41,8 +41,10 @@ public class SearchTest implements IpSearchConstant {
                 DataBlock fdata = Searcher.memorySearch(firstIp);
                 if (fdata != null) {
                     if (fdata.getRegion().equals(sourceRegion)) {
-                        lineCount++;
-                        //System.out.println("success:" + lineCount);
+                        //lineCount++;
+                        // 更新
+                        System.out.println("success:" + lineCount);
+                        return;
                     } else {
                         System.out.println("[Error]: Search first IP failed, DB region = " + fdata.getRegion());
                         bwr.write("[Source]: Region: " + sourceRegion);
