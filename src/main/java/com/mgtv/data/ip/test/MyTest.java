@@ -1,4 +1,4 @@
-package com.ymz.ip.test;
+package com.mgtv.data.ip.test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

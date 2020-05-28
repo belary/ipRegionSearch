@@ -1,11 +1,11 @@
-package com.ymz.ip.make;
+package com.mgtv.data.ip.make;
 
 import com.alibaba.fastjson.JSONArray;
-import com.ymz.ip.model.DataBlock;
-import com.ymz.ip.model.IndexBlock;
-import com.ymz.ip.model.IpSearchConstant;
-import com.ymz.ip.utils.ByteUtil;
-import com.ymz.ip.utils.GZipUtils;
+import com.mgtv.data.ip.model.DataBlock;
+import com.mgtv.data.ip.model.IndexBlock;
+import com.mgtv.data.ip.model.IpSearchConstant;
+import com.mgtv.data.ip.utils.ByteUtil;
+import com.mgtv.data.ip.utils.GZipUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -187,10 +187,11 @@ public class DatMaker implements IpSearchConstant {
                 GZipUtils.compress(tagDbFilePath,true);
                 log.info("|--[Ok]");
             }
+
             //print the copyright and the release timestamp info
             Calendar cal = Calendar.getInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-            String copyright = "Created by ymz at " + dateFormat.format(cal.getTime());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss Z");
+            String copyright = "Created by fc at " + dateFormat.format(cal.getTime());
             log.info("|--[copyright] " + copyright);
             log.info("|--[Ok]");
         } catch (Exception e) {

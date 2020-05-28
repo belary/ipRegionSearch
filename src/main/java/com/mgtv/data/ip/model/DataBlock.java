@@ -1,4 +1,4 @@
-package com.ymz.ip.model;
+package com.mgtv.data.ip.model;
 
 import lombok.Data;
 

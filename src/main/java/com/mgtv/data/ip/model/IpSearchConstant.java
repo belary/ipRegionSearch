@@ -1,4 +1,4 @@
-package com.ymz.ip.model;
+package com.mgtv.data.ip.model;
 
 /**
  * @author ymz
@@ -11,5 +11,5 @@ public interface IpSearchConstant {
     String SEARCH_DB = "search.db";
     String ERROR_LOG = "error_log.txt";
     boolean devDebug = true;
-    boolean GZIP = true;
+    boolean GZIP = false;
 }

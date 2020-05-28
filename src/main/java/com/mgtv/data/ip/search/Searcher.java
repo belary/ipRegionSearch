@@ -1,10 +1,10 @@
-package com.ymz.ip.search;
+package com.mgtv.data.ip.search;
 
 import com.alibaba.fastjson.JSONArray;
-import com.ymz.ip.model.DataBlock;
-import com.ymz.ip.model.IpSearchConstant;
-import com.ymz.ip.utils.ByteUtil;
-import com.ymz.ip.utils.GZipUtils;
+import com.mgtv.data.ip.model.DataBlock;
+import com.mgtv.data.ip.model.IpSearchConstant;
+import com.mgtv.data.ip.utils.ByteUtil;
+import com.mgtv.data.ip.utils.GZipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.util.RamUsageEstimator;
 
@@ -45,7 +45,7 @@ public class Searcher implements IpSearchConstant {
         if (!memory_mode_load) {
             synchronized (LOCK) {
                 if (!memory_mode_load) {
-                    loadFileToMemoryMode();
+                    myLoadFileToMemoryMode();
                 }
             }
         }

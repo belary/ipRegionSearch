@@ -1,6 +1,6 @@
-package com.ymz.ip.test;
+package com.mgtv.data.ip.test;
 
-import com.ymz.ip.make.Adapter;
+import com.mgtv.data.ip.make.Adapter;
 
 /**
  *

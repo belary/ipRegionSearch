@@ -1,9 +1,9 @@
-package com.ymz.ip;
+package com.mgtv.data.ip;
 
-import com.ymz.ip.model.DataBlock;
-import com.ymz.ip.model.IpSearchConstant;
-import com.ymz.ip.search.Searcher;
-import com.ymz.ip.utils.ByteUtil;
+import com.mgtv.data.ip.model.DataBlock;
+import com.mgtv.data.ip.model.IpSearchConstant;
+import com.mgtv.data.ip.search.Searcher;
+import com.mgtv.data.ip.utils.ByteUtil;
 
 import java.io.*;
 

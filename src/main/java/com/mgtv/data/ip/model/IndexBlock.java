@@ -1,6 +1,6 @@
-package com.ymz.ip.model;
+package com.mgtv.data.ip.model;
 
-import com.ymz.ip.utils.ByteUtil;
+import com.mgtv.data.ip.utils.ByteUtil;
 import lombok.Data;
 
 import java.io.Serializable;

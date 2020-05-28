@@ -1,7 +1,7 @@
-package com.ymz.ip.make;
+package com.mgtv.data.ip.make;
 
-import com.ymz.ip.model.IpSearchConstant;
-import com.ymz.ip.utils.ByteUtil;
+import com.mgtv.data.ip.model.IpSearchConstant;
+import com.mgtv.data.ip.utils.ByteUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -30,8 +30,6 @@ public class Adapter implements IpSearchConstant {
                 continue;
             }
             str = str.replaceAll("\\*", "0");
-            //"614","001.045.000.000","001.045.255.255","19726336","19791871","中国","北京","北京","cheeryzone.com.cn","联通","*
-            //"13","001.001.008.000","001.001.008.255","16844800","16845055","中国","广东","珠海","*"                ,"电信","*"
             //001.050.236.000	001.050.255.255	中国	宁夏	银川	*	电信	38.487193	106.230908	Asia/Shanghai	UTC+8	640100	86	CN	AP
             //  0               1               2       3       4       5   6       7           8            9              10
             // 使用我司的分割格式

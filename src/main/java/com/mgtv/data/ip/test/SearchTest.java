@@ -1,20 +1,19 @@
-package com.ymz.ip.test;
+package com.mgtv.data.ip.test;
 
-import com.ymz.ip.model.DataBlock;
-import com.ymz.ip.model.IpSearchConstant;
-import com.ymz.ip.search.Searcher;
-import com.ymz.ip.utils.ByteUtil;
+import com.mgtv.data.ip.make.DatMaker;
+import com.mgtv.data.ip.model.DataBlock;
+import com.mgtv.data.ip.model.IpSearchConstant;
+import com.mgtv.data.ip.search.Searcher;
+import com.mgtv.data.ip.utils.ByteUtil;
 
 import java.io.*;
 
 /**
  * SearchTest
- * @author ymz
- * @date 2019/12/12 17:01
  */
 public class SearchTest implements IpSearchConstant {
     public static void main(String[] args) throws IOException {
-        System.out.println(Searcher.memorySearch("124.232.146.140"));
+        System.out.println(Searcher.memorySearch("001.000.201.254"));
         search3();
     }
 

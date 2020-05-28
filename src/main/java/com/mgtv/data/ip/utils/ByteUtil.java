@@ -1,4 +1,4 @@
-package com.ymz.ip.utils;
+package com.mgtv.data.ip.utils;
 
 import java.io.Closeable;
 import java.io.File;
